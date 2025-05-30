@@ -30,8 +30,8 @@ This project is a simple desktop calculator application built using the Java Swi
 
 ## 📸 Screenshot
 
-(<img width="242" alt="image" src="https://github.com/user-attachments/assets/fba7ef75-6ce5-4208-8e85-a30336a40c4f" />
-)
+<img width="242" alt="image" src="https://github.com/user-attachments/assets/fba7ef75-6ce5-4208-8e85-a30336a40c4f" />
+
 
 ## 🛠️ Setup and Running
 
