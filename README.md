@@ -27,32 +27,6 @@ This project is a simple desktop calculator application built using the Java Swi
 
 <img width="242" alt="image" src="https://github.com/user-attachments/assets/fba7ef75-6ce5-4208-8e85-a30336a40c4f" />
 
-
-## 🛠️ Setup and Running
-
-To run this project, you need to have the Java Development Kit (JDK) installed on your system.
-
-1.  **Clone the Repository (optional):**
-    ```bash
-    git clone [https://github.com/](https://github.com/)[YourGitHubUsername]/[YourProjectName].git
-    cd [YourProjectName]
-    ```
-2.  **Compilation and Execution:**
-    * If you are using an IDE (like IntelliJ IDEA, Eclipse, etc.), open the project and run the `main` method in the `Calculator.java` file.
-    * To compile and run from the command line:
-        ```bash
-        # In the project's root directory (where Calculator.java is located)
-        javac Calculator.java
-        java Calculator
-        ```
-        If your `Calculator.java` file is inside a package (e.g., `package com.example;`), the compilation and execution commands should be adjusted accordingly. For instance, if the file is at `com/example/Calculator.java` and has the `package com.example;` declaration:
-        ```bash
-        # Assuming you are in the src directory (src/com/example/Calculator.java)
-        javac com/example/Calculator.java
-        java com.example.Calculator
-        ```
-        However, as the code you shared does not have a package declaration, the first method is applicable.
-
 ## 🏗️ Code Structure
 
 * **`Calculator.java`**: The main class of the application.
