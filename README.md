@@ -1,8 +1,3 @@
-Haklısınız, projelerinizi uluslararası bir kitleye ulaştırmak ve daha fazla kişi tarafından anlaşılır kılmak için README dosyasını İngilizce hazırlamak genellikle daha iyi bir pratiktir.
-
-İşte bir önceki Türkçe README içeriğinin İngilizce çevirisi:
-
-Markdown
 
 # Java Swing Calculator
 
