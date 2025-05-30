@@ -1,0 +1,308 @@
+package Calculator1;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class Calculator {
+
+    private JFrame frame;
+    private JLabel displayLabel;
+    private JPanel buttonPanel;
+
+    private StringBuilder currentInput;
+    private double firstOperand;
+    private String pendingOperation;
+    private boolean startNewNumber; 
+
+   
+    public Calculator() {
+        currentInput = new StringBuilder("0");
+        firstOperand = 0;
+        pendingOperation = "";
+        startNewNumber = true;
+        initUI();
+    }
+
+   
+    private void initUI() {
+        frame = new JFrame("Calculator");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(350, 450); 
+        frame.setLayout(new BorderLayout(10, 10)); 
+
+        
+        JPanel displayPanel = new JPanel(new BorderLayout());
+        displayPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10)); 
+        displayLabel = new JLabel(currentInput.toString(), SwingConstants.RIGHT);
+        displayLabel.setFont(new Font("Serif", Font.BOLD, 36));
+        displayLabel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.GRAY), 
+            BorderFactory.createEmptyBorder(5, 10, 5, 10) 
+        ));
+        displayPanel.add(displayLabel, BorderLayout.CENTER);
+        frame.add(displayPanel, BorderLayout.NORTH);
+
+
+        buttonPanel = new JPanel(new GridLayout(5, 4, 5, 5)); 
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
+
+        String[] buttonLabels = {
+            "C", "+/-", "%", "/",
+            "7", "8", "9", "x",
+            "4", "5", "6", "-",
+            "1", "2", "3", "+",
+            "0", ".", "DEL", "=" 
+        };
+
+        for (String label : buttonLabels) {
+            JButton button = new JButton(label);
+            button.setFont(new Font("Arial", Font.BOLD, 18));
+            button.setFocusPainted(false); 
+            button.addActionListener(new ButtonClickListener());
+         
+            button.setBackground(new Color(220, 220, 220));
+            if (label.matches("[0-9.]")) {
+                 button.setBackground(new Color(240, 240, 240));
+            } else if (label.equals("=")) {
+                button.setBackground(new Color(100, 180, 255)); 
+                button.setForeground(Color.WHITE);
+            } else if (label.equals("C") || label.equals("DEL")) {
+                 button.setBackground(new Color(255, 150, 150)); 
+            }
+
+
+            buttonPanel.add(button);
+        }
+
+        frame.add(buttonPanel, BorderLayout.CENTER);
+        frame.setLocationRelativeTo(null); 
+        frame.setVisible(true);
+    }
+
+ 
+    private class ButtonClickListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String command = ((JButton) e.getSource()).getText();
+
+            switch (command) {
+                case "0": case "1": case "2": case "3": case "4":
+                case "5": case "6": case "7": case "8": case "9":
+                    handleNumberInput(command);
+                    break;
+                case ".":
+                    handleDecimalInput();
+                    break;
+                case "+": case "-": case "x": case "/": case "%":
+                    handleOperatorInput(command);
+                    break;
+                case "=":
+                    handleEqualsInput();
+                    break;
+                case "C":
+                    handleClearInput();
+                    break;
+                case "+/-":
+                    handleSignChangeInput();
+                    break;
+                case "DEL":
+                    handleDeleteInput();
+                    break;
+            }
+            updateDisplay();
+        }
+    }
+
+   
+    private void handleNumberInput(String number) {
+        if (startNewNumber) {
+            currentInput.setLength(0); 
+            startNewNumber = false;
+        }
+       
+        if (currentInput.toString().equals("0") && !number.equals("0")) {
+            currentInput.setLength(0);
+        }
+        
+        if (currentInput.length() < 16) {
+             currentInput.append(number);
+        }
+    }
+
+    
+    private void handleDecimalInput() {
+        if (startNewNumber) {
+            currentInput.setLength(0);
+            currentInput.append("0");
+            startNewNumber = false;
+        }
+        if (!currentInput.toString().contains(".")) { 
+            currentInput.append(".");
+        }
+    }
+
+   
+    private void handleOperatorInput(String operator) {
+        if (!startNewNumber && !pendingOperation.isEmpty()) {
+           
+            performCalculation();
+        }
+        try {
+            firstOperand = Double.parseDouble(currentInput.toString());
+        } catch (NumberFormatException ex) {
+     
+            handleError("Invalid Input");
+            return;
+        }
+        pendingOperation = operator;
+        startNewNumber = true; 
+    }
+
+   
+    private void handleEqualsInput() {
+        if (pendingOperation.isEmpty() || startNewNumber) {
+           
+            if(!pendingOperation.isEmpty() && startNewNumber && firstOperand != 0){
+                 
+                 return;
+            } else if (pendingOperation.isEmpty()){
+                return;
+            }
+        }
+        performCalculation();
+        pendingOperation = ""; 
+        startNewNumber = true; 
+    }
+
+    private void handleClearInput() {
+        currentInput.setLength(0);
+        currentInput.append("0");
+        firstOperand = 0;
+        pendingOperation = "";
+        startNewNumber = true;
+    }
+
+
+    private void handleSignChangeInput() {
+        if (currentInput.length() > 0 && !currentInput.toString().equals("0") && !currentInput.toString().equals("Error")) {
+            if (currentInput.charAt(0) == '-') {
+                currentInput.deleteCharAt(0);
+            } else {
+                currentInput.insert(0, '-');
+            }
+           
+            if (startNewNumber && !pendingOperation.isEmpty()) {
+                try {
+                    firstOperand = Double.parseDouble(currentInput.toString());
+                } catch (NumberFormatException e){
+                    handleError("Invalid Input");
+                }
+            }
+        }
+    }
+    
+
+    private void handleDeleteInput() {
+        if (startNewNumber || currentInput.toString().equals("Error")) {
+           
+            handleClearInput();
+        } else if (currentInput.length() > 0) {
+            currentInput.deleteCharAt(currentInput.length() - 1);
+            if (currentInput.length() == 0 || currentInput.toString().equals("-")) {
+                currentInput.setLength(0);
+                currentInput.append("0");
+                
+            }
+        }
+         
+    }
+
+
+
+    private void performCalculation() {
+        if (pendingOperation.isEmpty() || startNewNumber) {
+            
+            return;
+        }
+        double secondOperand;
+        try {
+            secondOperand = Double.parseDouble(currentInput.toString());
+        } catch (NumberFormatException e) {
+            handleError("Input Error");
+            return;
+        }
+
+        double result = 0;
+
+        switch (pendingOperation) {
+            case "+":
+                result = firstOperand + secondOperand;
+                break;
+            case "-":
+                result = firstOperand - secondOperand;
+                break;
+            case "x":
+                result = firstOperand * secondOperand;
+                break;
+            case "/":
+                if (secondOperand == 0) {
+                    handleError("Error: Div by 0");
+                    return;
+                }
+                result = firstOperand / secondOperand;
+                break;
+            case "%":
+                 if (secondOperand == 0) {
+                    handleError("Error: Mod by 0");
+                    return;
+                }
+                result = firstOperand % secondOperand; 
+                break;
+        }
+
+ 
+        if (result == (long) result) {
+            currentInput.setLength(0);
+            currentInput.append((long) result);
+        } else {
+            currentInput.setLength(0);
+            currentInput.append(String.format("%.10g%n", result).trim()); 
+        }
+        
+        firstOperand = result; 
+    }
+    
+    private void handleError(String errorMessage){
+        currentInput.setLength(0);
+        currentInput.append(errorMessage);
+        startNewNumber = true;
+        pendingOperation = "";
+        firstOperand = 0;
+        updateDisplay(); 
+        
+    }
+
+
+
+    private void updateDisplay() {
+        String textToDisplay = currentInput.toString();
+        if (textToDisplay.length() > 16 && !textToDisplay.equals("Error: Div by 0") && !textToDisplay.equals("Input Error")) { 
+            textToDisplay = textToDisplay.substring(0, 16);
+        }
+        displayLabel.setText(textToDisplay);
+    }
+
+ 
+    public static void main(String[] args) {
+      
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new Calculator();
+            }
+        });
+    }
+}
+
